@@ -75,8 +75,15 @@ function functionsForFile($file) {
 function stepsForFunction($func) {
 	$function = new ReflectionFunction($func);
 	$docComment = array_map(function ($s) {
+			// If single-line doc comment, remove *?*/
+			if (strrpos($s, '*/') == mb_strlen($s) - 2)
+				$s = substr($s, 0, mb_strlen($s) - 2);
+			elseif (strrpos($s, '**/') == mb_strlen($s) - 3)
+				$s = substr($s, 0, mb_strlen($s) - 3);
+			
 			return ltrim($s, ' */');
 		}, explode("\n", $function->getDocComment()));
+	
 	return array_map(function ($s) {
 			return trim(substr($s, 4));
 		}, array_filter($docComment, function ($s) {
@@ -98,19 +105,20 @@ function solversForFile($file) {
 	return $solvers;
 }
 
-function stepsForEvent($event, $code) {
+function stepsForEvent($matchEvent, $code) {
 	$events = array_map('trim', array_filter(explode("\n\n", $code)));
+	
 	foreach ($events as $event) {
-		if (strpos($event, "on {$event}")) {
-			$event = $event;
+		if (strpos($event, "on {$matchEvent}") !== false) {
+			$matchingEvent = $event;
 			break;
 		}
 	}
 	
-	if (empty($event))
+	if (empty($matchingEvent))
 		return [];
 	
-	return array_slice(array_map('trim', explode("\n", $event)), 1);
+	return array_slice(array_map('trim', explode("\n", $matchingEvent)), 1);
 }
 
 function solve($step, $solvers, $context) {
@@ -122,7 +130,7 @@ function solve($step, $solvers, $context) {
 	}
 	
 	if (empty($matches))
-		return False;
+		return $context;
 	
 	$argCount = count($matches) - 1;
 	
@@ -158,5 +166,5 @@ $context = [];
 $steps = stepsForEvent("{$requestMethod} {$requestPath}", $code);
 
 foreach ($steps as $step) {
-	solve($step, $solvers, $context);
+	$context = solve($step, $solvers, $context);
 }
