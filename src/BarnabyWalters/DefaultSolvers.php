@@ -4,7 +4,7 @@ namespace BarnabyWalters\Solvers;
 
 /** STEP show (.+) **/
 function show($name, array $context) {
-	echo "TODO: show the contents of the {$name} template, rendered with context:";
+	echo "TODO: show the contents of the {$name} template, rendered with context:\n";
 	print_r($context);
 	return $context;
 }
