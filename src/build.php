@@ -18,6 +18,8 @@ $app->register('build')
 		if ($dir == 'CURRENT_DIRECTORY')
 			$dir = getcwd();
 		
+		$dir = realpath($dir);
+		
 		$output->writeln("Building project from {$dir}");
 	});
 
