@@ -1,6 +1,10 @@
 <?php
 #!/usr/local/php
 
+// Eventually this will be the command line tool which builds applications into
+// phar files and launches the web UI and such things. At the moment it’s just
+// a tiny stub.
+
 require __DIR__ . '/../vendor/autoload.php';
 
 use Symfony\Component\Console;
