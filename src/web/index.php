@@ -4,6 +4,12 @@ require __DIR__ . '/../../vendor/autoload.php';
 
 use Doctrine\Common\Annotations;
 
+/**
+ * Functions For File
+ * 
+ * Given a path to a PHP file, return a list of properly-namespaced names of
+ * functions defined in that file
+ */
 function functionsForFile($file) {
 	$source = file_get_contents($file);
 	$tokens = token_get_all($source);
@@ -72,6 +78,10 @@ function functionsForFile($file) {
 	return $functions;
 }
 
+/**
+ * Given a function name, introspects the doc comment and returns a list of the
+ * step definition regexes found within
+ */
 function stepsForFunction($func) {
 	$function = new ReflectionFunction($func);
 	$docComment = array_map(function ($s) {
@@ -91,6 +101,9 @@ function stepsForFunction($func) {
 			}));
 }
 
+/**
+ * Given a file path, returns an assoc. array of step regex -> solver function name
+ */
 function solversForFile($file) {
 	$functions = functionsForFile($file);
 	
@@ -105,6 +118,10 @@ function solversForFile($file) {
 	return $solvers;
 }
 
+/**
+ * Given some handler code and an event name to find, returns an array of steps
+ * for that handler
+ */
 function stepsForEvent($matchEvent, $code) {
 	$events = array_map('trim', array_filter(explode("\n\n", $code)));
 	
@@ -121,6 +138,10 @@ function stepsForEvent($matchEvent, $code) {
 	return array_slice(array_map('trim', explode("\n", $matchingEvent)), 1);
 }
 
+/**
+ * Given a step regex, a solver map and a context, executes the step solver and
+ * returns the new context.
+ */
 function solve($step, $solvers, $context) {
 	foreach ($solvers as $match => $solver) {
 		$matches = [];

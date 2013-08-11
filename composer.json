@@ -1,7 +1,6 @@
 {
     "name": "barnabywalters/php-web-dsl",
     "require": {
-				"doctrine/annotations": "*",
 				"symfony/console": "*"
     },
     "license": "MIT",
