@@ -4,10 +4,6 @@ require __DIR__ . '/../../vendor/autoload.php';
 
 use Doctrine\Common\Annotations;
 
-$project = realpath(__DIR__ . '/../../project');
-
-$code = file_get_contents($project . '/index.web');
-
 function functionsForFile($file) {
 	$source = file_get_contents($file);
 	$tokens = token_get_all($source);
@@ -23,7 +19,6 @@ function functionsForFile($file) {
 	foreach ($tokens as $token) {
 		switch ($token[0]) {
 			case T_NAMESPACE:
-				echo "IN NAMESPACE";
 				$inNamespace = true;
 				$namespace = '';
 				break;
@@ -96,15 +91,72 @@ function solversForFile($file) {
 	
 	foreach ($functions as $f) {
 		foreach (stepsForFunction($f) as $step) {
-			$solvers[$step] = $solver;
+			$solvers[$step] = $f;
 		}
 	}
 	
 	return $solvers;
 }
 
+function stepsForEvent($event, $code) {
+	$events = array_map('trim', array_filter(explode("\n\n", $code)));
+	foreach ($events as $event) {
+		if (strpos($event, "on {$event}")) {
+			$event = $event;
+			break;
+		}
+	}
+	
+	if (empty($event))
+		return [];
+	
+	return array_slice(array_map('trim', explode("\n", $event)), 1);
+}
+
+function solve($step, $solvers, $context) {
+	foreach ($solvers as $match => $solver) {
+		$matches = [];
+		
+		if (preg_match('/' . $match . '/', $step, $matches) > 0)
+			break;
+	}
+	
+	if (empty($matches))
+		return False;
+	
+	$argCount = count($matches) - 1;
+	
+	if ($argCount > 0) {
+		$args = array_slice($matches, 1);
+		$args[] = $context;
+		
+		$function = new ReflectionFunction($solver);
+		return $function->invokeArgs($args);
+	} else {
+		return $solver($context);
+	}
+}
+
+// end functions, start output
+
+// Set up
+$project = realpath(__DIR__ . '/../../project');
+$code = file_get_contents($project . '/index.web');
+
 $file = __DIR__ . '/../BarnabyWalters/DefaultSolvers.php';
 include $file;
 $solvers = solversForFile($file);
 
-print_r($solvers);
+// fake web server environment
+$requestPath = '/';
+$requestMethod = 'GET';
+
+$context = [];
+
+// TODO: match the request path against a set of steps
+
+$steps = stepsForEvent("{$requestMethod} {$requestPath}", $code);
+
+foreach ($steps as $step) {
+	solve($step, $solvers, $context);
+}

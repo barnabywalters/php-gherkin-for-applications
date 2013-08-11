@@ -3,7 +3,7 @@
 namespace BarnabyWalters\Solvers;
 
 /**
- * STEP show ([.]+)
+ * STEP show (.+)
  * @param array $context
  */
 function show($name, array $context) {
