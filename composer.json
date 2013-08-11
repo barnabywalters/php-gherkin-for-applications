@@ -1,0 +1,15 @@
+{
+    "name": "barnabywalters/php-web-dsl",
+    "require": {
+				"doctrine/annotations": "*",
+				"symfony/console": "*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Barnaby Walters",
+            "email": "barnaby@waterpigs.co.uk"
+        }
+    ],
+    "minimum-stability": "dev"
+}
