@@ -119,6 +119,9 @@ function solversForFile($file) {
 /**
  * Given some handler code and an event name to find, returns an array of steps
  * for that handler
+ * 
+ * @todo how to handle paths with template vars in e.g. GET /notes/{id}? 
+ * Auto-inject {name} => $context['name']?
  */
 function stepsForEvent($matchEvent, $code) {
 	$events = array_map('trim', array_filter(explode("\n\n", $code)));
