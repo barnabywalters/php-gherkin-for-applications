@@ -2,8 +2,6 @@
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-use Doctrine\Common\Annotations;
-
 /**
  * Functions For File
  * 
@@ -164,6 +162,16 @@ function solve($step, $solvers, $context) {
 	} else {
 		return $solver($context);
 	}
+}
+
+function functionLocation($func) {
+	$f = new ReflectionFunction($func);
+	$filename = $f->getFileName();
+	$endLine = $f->getEndLine();
+	$startLine = $f->getStartLine();
+	$docCommentLength = count(explode("\n", $f->getDocComment()));
+	
+	return [$filename, $startLine - 1 - $docCommentLength, $endLine];
 }
 
 // end functions, start output
